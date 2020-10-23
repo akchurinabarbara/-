@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -12,6 +13,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 public class SecondFragment extends Fragment {
+    private Button mAddMusicButton;
+    private Button mSaveButton;
 
     @Override
     public View onCreateView(
@@ -25,7 +28,10 @@ public class SecondFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.addMusicButton).setOnClickListener(new View.OnClickListener() {
+        mAddMusicButton = (Button) view.findViewById(R.id.addMusicButton);
+        mSaveButton = (Button) view.findViewById(R.id.saveButton);
+
+        mAddMusicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, R.string.addMusicSuccessful, Snackbar.LENGTH_LONG)
@@ -33,7 +39,7 @@ public class SecondFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.saveButton).setOnClickListener(new View.OnClickListener() {
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, R.string.alarmCreateSuccessful, Snackbar.LENGTH_LONG)

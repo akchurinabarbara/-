@@ -14,7 +14,7 @@
         <include
             layout="@layout/sun_motion_time_layout"
             android:layout_width="match_parent"
-            android:layout_height="133dp" />
+            android:layout_height="wrap_content" />
 
         <View
             android:id="@+id/divider"
