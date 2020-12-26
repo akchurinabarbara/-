@@ -1,5 +1,7 @@
 package com.example.myalarmclock;
 
+import android.app.AlarmManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.room.Room;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,6 +38,9 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //AlarmDatabase appDB = AlarmDatabase.getInstance(getView().getContext());
+        //appDB.alarmDAO().getAll();
+
         mAddNewAlarm = (FloatingActionButton) view.findViewById(R.id.addAlarmFab);
 
         mSunriseTimeText = (TextView) view.findViewById(R.id.sunriseTimeText);
@@ -50,5 +56,11 @@ public class FirstFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
+    }
+
+
+
+    private void setAlarm(Context context) {
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 }

@@ -13,7 +13,8 @@
     <string name="on">Вкл.</string>
 
     <string name="alarmCreateSuccessful">Будильник создан</string>
-    <string name="alarmDeleteSuccessful">Будильник удвлен</string>
+    <string name="alarmCreateNotSuccessful">Не удалось создать будильник</string>
+    <string name="alarmDeleteSuccessful">Будильник удален</string>
     <string name="addMusicSuccessful">Мелодия добавлена</string>
 
     <!-- Preference Titles -->
