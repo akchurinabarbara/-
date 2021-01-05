@@ -1,4 +1,4 @@
-package com.example.myalarmclock;
+package com.example.myalarmclock.UI;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.myalarmclock.AlarmData;
+import com.example.myalarmclock.App;
+import com.example.myalarmclock.Callables.CallableInsertInDataBase;
+import com.example.myalarmclock.Managers.Managers;
+import com.example.myalarmclock.R;
 import com.google.android.material.snackbar.Snackbar;
 
 
@@ -18,6 +23,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class SecondFragment extends Fragment {
     private Button mAddMusicButton;
@@ -60,12 +71,20 @@ public class SecondFragment extends Fragment {
                     Date date = formatter.parse(str);
 
                     //Создание нового будильника и запись его в БД
-                    AlarmData alarm = new AlarmData(0, date.getTime(), "", 1);
-                    AlarmDatabase appDB = AlarmDatabase.getInstance(getView().getContext());
-                    //appDB.alarmDAO().insert(alarm);
-                    //Managers.dataBaseManager.alarmDAO.insert(alarm);
+                    AlarmData alarm = new AlarmData(App.getInstance().getAlarmsCount() + 1, date.getTime(), "", 1);
 
-                    //Показ уведомления об успешном создании будильника
+                    //Асинхронное добавление в БД
+                    Observable.fromCallable(new CallableInsertInDataBase(alarm))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<Integer>() {
+                                @Override
+                                public void accept(Integer result) throws Exception {
+                                }
+                            });
+
+
+                            //Показ уведомления об успешном создании будильника
                     Managers.soundManager.playAccceptanceSound();
                     Snackbar.make(view, R.string.alarmCreateSuccessful, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();

@@ -1,7 +1,9 @@
-package com.example.myalarmclock;
+package com.example.myalarmclock.Sound;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+
+import com.example.myalarmclock.R;
 
 //Менеджер работы со звуком
 public class SoundManager {

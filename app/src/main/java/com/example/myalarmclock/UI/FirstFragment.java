@@ -1,8 +1,9 @@
-package com.example.myalarmclock;
+package com.example.myalarmclock.UI;
 
 import android.app.AlarmManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +12,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.room.Room;
 
+import com.example.myalarmclock.AlarmData;
+import com.example.myalarmclock.App;
+import com.example.myalarmclock.Callables.CallableInsertInDataBase;
+import com.example.myalarmclock.Callables.CallableReadFromDataBase;
+import com.example.myalarmclock.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class FirstFragment extends Fragment {
     private FloatingActionButton mAddNewAlarm;
@@ -38,8 +48,17 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //AlarmDatabase appDB = AlarmDatabase.getInstance(getView().getContext());
-        //appDB.alarmDAO().getAll();
+        //Асинхронное чтение из БД
+        Observable.fromCallable(new CallableReadFromDataBase())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<AlarmData>>() {
+                    @Override
+                    public void accept(List<AlarmData> alarmData) throws Exception {
+                        App.getInstance().setAlarmsCount(alarmData.size());
+                    }
+                });
+
 
         mAddNewAlarm = (FloatingActionButton) view.findViewById(R.id.addAlarmFab);
 
@@ -60,7 +79,6 @@ public class FirstFragment extends Fragment {
 
 
 
-    private void setAlarm(Context context) {
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    private void setAlarm() {
     }
 }

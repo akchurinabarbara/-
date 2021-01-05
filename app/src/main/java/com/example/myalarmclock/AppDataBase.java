@@ -11,21 +11,5 @@ import androidx.sqlite.db.SupportSQLiteOpenHelper;
 public abstract class AppDataBase  extends RoomDatabase {
     public abstract AlarmDAO alarmDAO();
 
-    @NonNull
-    @Override
-    protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration config) {
-        return null;
-    }
-
-    @NonNull
-    @Override
-    protected InvalidationTracker createInvalidationTracker() {
-        return null;
-    }
-
-    @Override
-    public void clearAllTables() {
-
-    }
 }
 
