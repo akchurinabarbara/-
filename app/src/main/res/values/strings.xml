@@ -11,6 +11,7 @@
     <string name="music">Мелодия</string>
     <string name="add">Добавить</string>
     <string name="on">Вкл.</string>
+    <string name="off">Выкл.</string>
 
     <string name="alarmCreateSuccessful">Будильник создан</string>
     <string name="alarmCreateNotSuccessful">Не удалось создать будильник</string>

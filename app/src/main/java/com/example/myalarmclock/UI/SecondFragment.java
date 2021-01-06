@@ -53,7 +53,7 @@ public class SecondFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Managers.soundManager.playAccceptanceSound();
-                Snackbar.make(view, R.string.addMusicSuccessful, Snackbar.LENGTH_LONG)
+                Snackbar.make(view,R.string.addMusicSuccessful, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

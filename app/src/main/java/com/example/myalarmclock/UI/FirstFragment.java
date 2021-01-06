@@ -7,17 +7,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myalarmclock.AlarmData;
 import com.example.myalarmclock.App;
 import com.example.myalarmclock.Callables.CallableInsertInDataBase;
 import com.example.myalarmclock.Callables.CallableReadFromDataBase;
 import com.example.myalarmclock.R;
+import com.example.myalarmclock.adapter.AlarmAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -33,8 +37,9 @@ public class FirstFragment extends Fragment {
     private TextView mSunriseText;
     private TextView mSunsetTimeText;
     private TextView mSunsetText;
+    private RecyclerView alarmsRecyclerView;
 
-    private List<AlarmData> mAlarmDataList;
+    private AlarmAdapter alarmAdapter;
 
     @Override
     public View onCreateView(
@@ -48,17 +53,11 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //Асинхронное чтение из БД
-        Observable.fromCallable(new CallableReadFromDataBase())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<AlarmData>>() {
-                    @Override
-                    public void accept(List<AlarmData> alarmData) throws Exception {
-                        App.getInstance().setAlarmsCount(alarmData.size());
-                    }
-                });
-
+        //Инициализация всех компонентов
+        alarmsRecyclerView = (RecyclerView) view.findViewById(R.id.alarmsRecyclerView);
+        alarmsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        alarmAdapter = new AlarmAdapter();
+        alarmsRecyclerView.setAdapter(alarmAdapter);
 
         mAddNewAlarm = (FloatingActionButton) view.findViewById(R.id.addAlarmFab);
 
@@ -75,10 +74,19 @@ public class FirstFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
+
+        //Асинхронное чтение из БД
+        Observable.fromCallable(new CallableReadFromDataBase())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<AlarmData>>() {
+                    @Override
+                    public void accept(List<AlarmData> alarmData) throws Exception {
+                        App.getInstance().setAlarmsCount(alarmData.size());
+                        alarmAdapter.clearItems();
+                        alarmAdapter.setItems(alarmData);
+                    }
+                });
     }
 
-
-
-    private void setAlarm() {
-    }
 }

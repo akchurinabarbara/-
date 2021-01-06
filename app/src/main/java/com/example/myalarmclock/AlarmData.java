@@ -14,13 +14,13 @@ public class AlarmData {
     public int id;
     //Время воиспроизведения буильника
     @ColumnInfo(name = "time")
-    long triggerAtMillis;
+    public long triggerAtMillis;
     //Мелодия будильника
     @ColumnInfo(name = "sound")
-    String sound;
+    public String sound;
     //Включен ли будильник
     @ColumnInfo(name = "isOn")
-    int isOn;
+    public int isOn;
 
     public AlarmData(int id, long triggerAtMillis, String sound, int isOn){
         this.id = id;
