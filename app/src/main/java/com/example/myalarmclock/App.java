@@ -1,8 +1,13 @@
 package com.example.myalarmclock;
 
+import android.Manifest;
 import android.app.Application;
+import android.content.Context;
 
+import androidx.core.app.ActivityCompat;
 import androidx.room.Room;
+
+import com.example.myalarmclock.Location.UserLocationListener;
 
 public class App extends Application {
     public static  App instance;
@@ -10,12 +15,17 @@ public class App extends Application {
     private AppDataBase dataBase;
     private int alarmsCount;
 
+    final Context mainContext = this;
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
-        dataBase = Room.databaseBuilder(this, AppDataBase.class, "database")
+
+        //Подключение к БД
+        dataBase = Room.databaseBuilder(mainContext, AppDataBase.class, "database")
                 .build();
+
     }
 
     public  static  App getInstance(){

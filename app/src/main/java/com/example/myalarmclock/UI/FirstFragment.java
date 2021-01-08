@@ -2,6 +2,8 @@ package com.example.myalarmclock.UI;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +22,12 @@ import com.example.myalarmclock.AlarmData;
 import com.example.myalarmclock.App;
 import com.example.myalarmclock.Callables.CallableInsertInDataBase;
 import com.example.myalarmclock.Callables.CallableReadFromDataBase;
+import com.example.myalarmclock.Location.UserLocationListener;
 import com.example.myalarmclock.R;
 import com.example.myalarmclock.adapter.AlarmAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -38,6 +42,7 @@ public class FirstFragment extends Fragment {
     private TextView mSunsetTimeText;
     private TextView mSunsetText;
     private RecyclerView alarmsRecyclerView;
+    private TextView mCoordinates;
 
     private AlarmAdapter alarmAdapter;
 
@@ -67,6 +72,11 @@ public class FirstFragment extends Fragment {
         mSunsetTimeText = (TextView) view.findViewById(R.id.sunsetTimeText);
         mSunsetText = (TextView) view.findViewById(R.id.sunsetText);
 
+        mCoordinates = (TextView) view.findViewById(R.id.coordinates);
+        Location location = UserLocationListener.getUserLocation();
+        mCoordinates.setText(formatLocation(location));
+
+
         mAddNewAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,5 +98,15 @@ public class FirstFragment extends Fragment {
                     }
                 });
     }
+
+    private String formatLocation(Location location) {
+        if (location == null)
+            return "";
+        return String.format(
+                "Coordinates: lat = %1$.4f, lon = %2$.4f, time = %3$tF %3$tT",
+                location.getLatitude(), location.getLongitude(), new Date(
+                        location.getTime()));
+    }
+
 
 }
