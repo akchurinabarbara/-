@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.myalarmclock.AlarmData;
 import com.example.myalarmclock.App;
 import com.example.myalarmclock.Callables.CallableInsertInDataBase;
+import com.example.myalarmclock.Location.UserLocationListener;
 import com.example.myalarmclock.Managers.Managers;
 import com.example.myalarmclock.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -68,7 +69,19 @@ public class SecondFragment extends Fragment {
                     String str = newTimeText.getText().toString();
                     DateFormat formatter = new SimpleDateFormat("hh:mm");
 
-                    Date date = formatter.parse(str);
+                    Date dateTime = formatter.parse(str);
+
+                    //Установка текущего времени пользователя
+                    Date date = new Date(UserLocationListener.getUserLocation().getTime());
+                    //если время меньше текущего - установить на след день
+                    if (dateTime.getHours() < date.getHours() || dateTime.getMinutes() < date.getMinutes())
+                    {
+                        date.setDate(date.getDate() + 1);
+                    }
+
+                    //Установка введенного пользователем времени
+                    date.setHours(dateTime.getHours());
+                    date.setMinutes(dateTime.getMinutes());
 
                     //Создание нового будильника и запись его в БД
                     AlarmData alarm = new AlarmData(App.getInstance().getAlarmsCount() + 1, date.getTime(), "", 1);

@@ -1,11 +1,15 @@
 package com.example.myalarmclock;
 
+import android.Manifest;
+import android.content.Context;
 import android.os.Bundle;
 
+import com.example.myalarmclock.Location.UserLocationListener;
 import com.example.myalarmclock.Managers.Managers;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +25,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Запрос предоставления разршения на использование геолокации
+        ActivityCompat.requestPermissions(this, new String[]
+                {
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                }, 0);
+
+        UserLocationListener.SetUpLocationListener(this);
+
     }
 
     @Override
