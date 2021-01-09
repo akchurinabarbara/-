@@ -1,12 +1,15 @@
 package com.example.myalarmclock.UI;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -21,6 +24,7 @@ import com.example.myalarmclock.R;
 import com.google.android.material.snackbar.Snackbar;
 
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,9 +36,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.app.Activity.RESULT_OK;
+
 public class SecondFragment extends Fragment {
     private Button mAddMusicButton;
     private Button mSaveButton;
+    private TextView mMusicText;
+
+    private Uri musicURI;
 
     private final int SelectMusic = 1;
 
@@ -52,14 +61,12 @@ public class SecondFragment extends Fragment {
 
         mAddMusicButton = (Button) view.findViewById(R.id.addMusicButton);
         mSaveButton = (Button) view.findViewById(R.id.saveButton);
+        mMusicText = (TextView) view.findViewById(R.id.musicNameText);
 
         mAddMusicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openGallery(SelectMusic);
-                Managers.soundManager.playAccceptanceSound();
-                Snackbar.make(view,R.string.addMusicSuccessful, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
 
@@ -87,8 +94,13 @@ public class SecondFragment extends Fragment {
                     date.setHours(dateTime.getHours());
                     date.setMinutes(dateTime.getMinutes());
 
+                    //Если мелодия не установлена - вызвать исключение
+                    if (musicURI.getPath() == ""){
+                        throw new Exception();
+                    }
+
                     //Создание нового будильника и запись его в БД
-                    AlarmData alarm = new AlarmData(App.getInstance().getAlarmsCount() + 1, date.getTime(), "", 1);
+                    AlarmData alarm = new AlarmData(App.getInstance().getAlarmsCount() + 1, date.getTime(), musicURI.getPath(), 1);
 
                     //Асинхронное добавление в БД
                     Observable.fromCallable(new CallableInsertInDataBase(alarm))
@@ -101,7 +113,7 @@ public class SecondFragment extends Fragment {
                             });
 
 
-                            //Показ уведомления об успешном создании будильника
+                    //Показ уведомления об успешном создании будильника
                     Managers.soundManager.playAccceptanceSound();
                     Snackbar.make(view, R.string.alarmCreateSuccessful, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -115,17 +127,40 @@ public class SecondFragment extends Fragment {
                     NavHostFragment.findNavController(SecondFragment.this)
                             .navigate(R.id.action_SecondFragment_to_FirstFragment);
                 }
+                catch (Exception e) {
+                    //Показ уведомления об неуспешном создании будильника
+                    Managers.soundManager.playRejectionSound();
+                    Snackbar.make(view, R.string.alarmCreateNotSuccessful, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    NavHostFragment.findNavController(SecondFragment.this)
+                            .navigate(R.id.action_SecondFragment_to_FirstFragment);
+                }
             }
         });
     }
 
-    //Откратие галереи
+    //Открытие галереи
     private void openGallery(int code) {
-        //Вызываем стандартную галерею для выбора изображения с помощью Intent.ACTION_PICK:
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-        //Тип получаемых объектов - image:
-        photoPickerIntent.setType("audio/*");
-        //Запускаем переход с ожиданием обратного результата в виде информации об изображении:
-        startActivityForResult(photoPickerIntent, code);
+        //Вызываем выбор аудиофайла
+        Intent musicPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(musicPickerIntent, code);
+    }
+
+    //Обрабатываем результат выбора в галерее:
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch (requestCode) {
+            case SelectMusic:
+                if (resultCode == RESULT_OK) {
+                    musicURI = imageReturnedIntent.getData();
+                    mMusicText.setText(musicURI.getPath());
+                    Managers.soundManager.playAccceptanceSound();
+                    Snackbar.make(getView(),R.string.addMusicSuccessful, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+                break;
+        }
     }
 }

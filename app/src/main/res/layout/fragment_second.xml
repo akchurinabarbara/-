@@ -61,13 +61,14 @@
                     android:id="@+id/addMusicButton"
                     android:layout_width="178dp"
                     android:layout_height="42dp"
+                    android:layout_marginTop="32dp"
                     android:text="@string/add"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/textView"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.864"
+                    app:layout_constraintHorizontal_bias="0.862"
                     app:layout_constraintStart_toEndOf="@+id/newMusicText"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.492" />
+                    app:layout_constraintVertical_bias="0.944" />
 
                 <TextView
                     android:id="@+id/musicNameText"
@@ -80,6 +81,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/addMusicButton"
                     app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/musicText"
+                    android:layout_width="177dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="16dp"
+                    android:text=""
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/newMusicText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
