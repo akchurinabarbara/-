@@ -85,7 +85,8 @@ public class SecondFragment extends Fragment {
                     //Установка текущего времени пользователя
                     Date date = new Date(UserLocationListener.getUserLocation().getTime());
                     //если время меньше текущего - установить на след день
-                    if (dateTime.getHours() < date.getHours() || dateTime.getMinutes() < date.getMinutes())
+                    if (dateTime.getHours() < date.getHours() ||
+                            (dateTime.getHours() == date.getHours() && dateTime.getMinutes() <= date.getMinutes()))
                     {
                         date.setDate(date.getDate() + 1);
                     }
@@ -100,7 +101,7 @@ public class SecondFragment extends Fragment {
                     }
 
                     //Создание нового будильника и запись его в БД
-                    AlarmData alarm = new AlarmData(App.getInstance().getAlarmsCount() + 1, date.getTime(), musicURI.getPath(), 1);
+                    AlarmData alarm = new AlarmData(App.getInstance().getAlarmsCount(), date.getTime(), musicURI.getPath(), 1);
 
                     //Асинхронное добавление в БД
                     Observable.fromCallable(new CallableInsertInDataBase(alarm))

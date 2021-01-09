@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.util.TimeZone;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -32,10 +33,20 @@ import com.example.myalarmclock.R;
 import com.example.myalarmclock.adapter.AlarmAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import net.time4j.Moment;
+import net.time4j.PlainDate;
+import net.time4j.PlainTimestamp;
+import net.time4j.calendar.astro.SolarTime;
+import net.time4j.engine.CalendarDate;
+import net.time4j.engine.ChronoFunction;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -81,10 +92,8 @@ public class FirstFragment extends Fragment {
         mAddNewAlarm = (FloatingActionButton) view.findViewById(R.id.addAlarmFab);
 
         mSunriseTimeText = (TextView) view.findViewById(R.id.sunriseTimeText);
-        mSunriseText = (TextView) view.findViewById(R.id.sunriseText);
 
         mSunsetTimeText = (TextView) view.findViewById(R.id.sunsetTimeText);
-        mSunsetText = (TextView) view.findViewById(R.id.sunsetText);
 
         //Установка координат
         mCoordinates = (TextView) view.findViewById(R.id.coordinates);
@@ -133,6 +142,22 @@ public class FirstFragment extends Fragment {
                 openGallery(SunSet_image);
             }
         });
+
+        //Установка времени восхода и заката
+        SolarTime solarTime = SolarTime.ofLocation(
+                UserLocationListener.getUserLocation().getLatitude(),
+                UserLocationListener.getUserLocation().getLongitude());
+
+        SimpleDateFormat formatterTime = new SimpleDateFormat("hh:mm aa");
+
+        Moment resultSunrise = PlainDate.nowInSystemTime().get(solarTime.sunrise());
+        Moment resultSunset = PlainDate.nowInSystemTime().get(solarTime.sunset());
+
+        PlainTimestamp sunrise = resultSunrise.toLocalTimestamp();
+        PlainTimestamp sunset = resultSunset.toLocalTimestamp();
+
+        mSunriseTimeText.setText(String.format("%02d:%02d",sunrise.getHour(),sunrise.getMinute()));
+        mSunsetTimeText.setText(String.format("%02d:%02d",sunset.getHour(),sunset.getMinute()));
 
     }
 

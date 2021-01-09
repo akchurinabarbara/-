@@ -18,7 +18,6 @@ public class CallableInsertInDataBase implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        App.getInstance().setAlarmsCount(data.id);
         AppDataBase appDB = App.getInstance().getDataBase();
         AlarmDAO alarmDAO = appDB.alarmDAO();
         alarmDAO.insert(data);
