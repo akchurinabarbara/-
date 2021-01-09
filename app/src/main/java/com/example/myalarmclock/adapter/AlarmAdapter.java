@@ -71,6 +71,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         private TextView alarmTime;
         private Switch alarmIsOn;
         private ImageButton alarmDelete;
+        private TextView alarmDate;
 
         public AlarmViewHolder(View itemView) {
             super(itemView);
@@ -78,16 +79,20 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             alarmTime = itemView.findViewById(R.id.alarmTime);
             alarmIsOn = itemView.findViewById(R.id.switchOn);
             alarmDelete = itemView.findViewById(R.id.deleteAlarm);
+            alarmDate = itemView.findViewById(R.id.alarmDate);
         }
 
         //Установка значений элемента списка
         public void bind(final AlarmData alarm) {
-            DateFormat formatter = new SimpleDateFormat("hh:mm aa");
+            DateFormat formatterTime = new SimpleDateFormat("hh:mm aa");
+            DateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy");
 
             Date date = new Date(alarm.triggerAtMillis);
 
-            String dateString = formatter.format(date);
+            String dateString = formatterTime.format(date);
             alarmTime.setText(dateString);
+            dateString = formatterDate.format(date);
+            alarmDate.setText(dateString);
 
             alarmIsOn.setChecked(alarm.isOn == 1? true : false);
             alarmIsOn.setText(alarm.isOn == 1? R.string.on : R.string.off);

@@ -2,14 +2,19 @@ package com.example.myalarmclock.UI;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,6 +32,8 @@ import com.example.myalarmclock.R;
 import com.example.myalarmclock.adapter.AlarmAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +41,8 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+
+import static android.app.Activity.RESULT_OK;
 
 public class FirstFragment extends Fragment {
     private FloatingActionButton mAddNewAlarm;
@@ -43,6 +52,11 @@ public class FirstFragment extends Fragment {
     private TextView mSunsetText;
     private RecyclerView alarmsRecyclerView;
     private TextView mCoordinates;
+    private ImageView mSunRiseImage;
+    private ImageView mSunSetImage;
+
+    private final int SunRise_image = 1;
+    private final int SunSet_image = 2;
 
     private AlarmAdapter alarmAdapter;
 
@@ -72,11 +86,13 @@ public class FirstFragment extends Fragment {
         mSunsetTimeText = (TextView) view.findViewById(R.id.sunsetTimeText);
         mSunsetText = (TextView) view.findViewById(R.id.sunsetText);
 
+        //Установка координат
         mCoordinates = (TextView) view.findViewById(R.id.coordinates);
         Location location = UserLocationListener.getUserLocation();
         mCoordinates.setText(formatLocation(location));
 
 
+        //Обработка нажатия кнопки создания нового будильника
         mAddNewAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,8 +113,75 @@ public class FirstFragment extends Fragment {
                         alarmAdapter.setItems(alarmData);
                     }
                 });
+
+        //Установка изображений
+        mSunRiseImage = (ImageView) view.findViewById(R.id.sunriseImage);
+        mSunSetImage = (ImageView) view.findViewById(R.id.sunsetImage);
+
+        //Обработка нажатия по изображениям и открытие галереи для выбора изображения
+        mSunRiseImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery(SunRise_image);
+            }
+        });
+
+        //Обработка нажатия по изображениям и открытие галереи для выбора изображения
+        mSunSetImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery(SunSet_image);
+            }
+        });
+
     }
 
+    //Обрабатываем результат выбора в галерее:
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch (requestCode) {
+            case SunRise_image:
+                if (resultCode == RESULT_OK) {
+                    setImage(mSunRiseImage, imageReturnedIntent, getView().getContext());
+                }
+                break;
+            case SunSet_image:
+                if (resultCode == RESULT_OK) {
+                    setImage(mSunSetImage, imageReturnedIntent, getView().getContext());
+                }
+                break;
+        }
+    }
+
+
+    //Откратие галереи
+    private void openGallery(int code) {
+        //Вызываем стандартную галерею для выбора изображения с помощью Intent.ACTION_PICK:
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        //Тип получаемых объектов - image:
+        photoPickerIntent.setType("image/*");
+        //Запускаем переход с ожиданием обратного результата в виде информации об изображении:
+        startActivityForResult(photoPickerIntent, code);
+    }
+
+    //Загрузка изображения
+    private void setImage(ImageView imageView, Intent imageReturnedIntent, Context context) {
+        try {
+            //Получаем URI изображения, преобразуем его в Bitmap
+            //объект и отображаем в элементе ImageView нашего интерфейса:
+            final Uri imageUri = imageReturnedIntent.getData();
+            final InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
+            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+            imageView.setImageBitmap(selectedImage);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Формирование строки с информацией о местоположении
     private String formatLocation(Location location) {
         if (location == null)
             return "";
@@ -107,6 +190,4 @@ public class FirstFragment extends Fragment {
                 location.getLatitude(), location.getLongitude(), new Date(
                         location.getTime()));
     }
-
-
 }

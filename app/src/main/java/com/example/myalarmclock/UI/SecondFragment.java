@@ -1,5 +1,6 @@
 package com.example.myalarmclock.UI;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,8 @@ public class SecondFragment extends Fragment {
     private Button mAddMusicButton;
     private Button mSaveButton;
 
+    private final int SelectMusic = 1;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -53,6 +56,7 @@ public class SecondFragment extends Fragment {
         mAddMusicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                openGallery(SelectMusic);
                 Managers.soundManager.playAccceptanceSound();
                 Snackbar.make(view,R.string.addMusicSuccessful, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -113,5 +117,15 @@ public class SecondFragment extends Fragment {
                 }
             }
         });
+    }
+
+    //Откратие галереи
+    private void openGallery(int code) {
+        //Вызываем стандартную галерею для выбора изображения с помощью Intent.ACTION_PICK:
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        //Тип получаемых объектов - image:
+        photoPickerIntent.setType("audio/*");
+        //Запускаем переход с ожиданием обратного результата в виде информации об изображении:
+        startActivityForResult(photoPickerIntent, code);
     }
 }
